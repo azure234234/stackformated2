@@ -1,0 +1,43 @@
+---
+# tasks file for searchinstall
+   - name: ElasticSearch Installation
+     debug:
+       msg: "ElasticSearch Installation"
+
+   - name: Install all packages
+     yum: name={{item}} state=present update_cache=yes
+     with_items:
+       - java-1.8.0-openjdk.x86_64
+       - firewalld
+       - wget
+   - name: Copying ElasticSearch RPM
+     copy:
+       src: ./../files/elasticsearch-5.2.1.rpm
+       dest: /opt/elasticsearch-5.2.1.rpm
+
+   - name: Install ElastichSearch package.
+     yum:
+       name: /opt/elasticsearch-5.2.1.rpm
+       state: present
+
+   - name: Copying the Kibana RPM
+     copy:
+       src: ./../files/kibana-5.2.1-x86_64.rpm
+       dest: /opt/kibana-5.2.1-x86_64.rpm
+
+   - name: Installing Kibana Package
+     yum:
+       name: /opt/kibana-5.2.1-x86_64.rpm
+       state: present
+
+   - copy:
+       src: ./../files/searchinstall.sh
+       dest: /home/searchinstall.sh
+
+   - name: setting permission
+     file: dest=/home/searchinstall.sh mode=a+x
+
+   - name: executing the script on remote machine
+     shell: sh /home/searchinstall.sh {{ ip1 }} {{ ip2 }} {{ ip3 }} {{ id1 }} {{ id2 }} {{ id3 }}
+     ignore_errors: yes
+

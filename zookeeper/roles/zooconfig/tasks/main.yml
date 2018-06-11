@@ -1,0 +1,14 @@
+---
+#/etc/ansible/roles/zooconfig/tasks/main.yml
+
+# tasks file for zooconfig
+   - copy:
+       src: ./../files/zooconfig.sh
+       dest: /home/zooconfig.sh
+
+   - name: setting permission
+     file: dest=/home/zooconfig.sh mode=a+x
+
+   - name: executing the script on remote machine
+     shell: sh /home/zooconfig.sh {{ ip1 }} {{ ip2 }} {{ ip3 }} {{ id1 }} {{ id2 }} {{ id3 }}
+     ignore_errors: yes

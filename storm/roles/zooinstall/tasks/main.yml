@@ -1,0 +1,22 @@
+---
+#/etc/ansible/roles/zooinstall/tasks/main.yml
+# tasks file for zooinstall
+   - name: Install all packages
+     yum: name={{item}} state=present update_cache=yes
+     with_items:
+       - java-1.8.0-openjdk.x86_64
+       - firewalld
+       - wget
+
+   - get_url: url=http://apache.org/dist/zookeeper/current/zookeeper-3.4.10.tar.gz dest=/home/
+
+   - copy:
+       src: ./../files/zooinstall.sh
+       dest: /home/zooinstall.sh
+
+   - name: setting permission
+     file: dest=/home/zooinstall.sh mode=a+x
+
+   - name: executing the script on remote machine
+     shell: sh /home/zooinstall.sh {{ ip1 }} {{ ip2 }} {{ ip3 }} {{ id1 }} {{ id2 }} {{ id3 }}
+     ignore_errors: yes

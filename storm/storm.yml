@@ -1,0 +1,6 @@
+---
+- hosts: storm
+  roles:
+    - zooinstall
+    - zooconfig
+    - storminstall

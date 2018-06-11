@@ -1,0 +1,9 @@
+---
+# defaults file for kafkainstall
+
+ip1: 10.0.0.23  
+ip2: 10.0.0.24  
+ip3: 10.0.0.25
+id1: eheu2ut1kafka01.innovate.lan
+id2: eheu2ut1kafka02.innovate.lan
+id3: eheu2ut1kafka03.innovate.lan

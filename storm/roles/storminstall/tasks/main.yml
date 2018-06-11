@@ -1,0 +1,49 @@
+---
+# tasks file for storminstall
+# install storm
+   - name: Install all packages
+     yum: name={{item}} state=present update_cache=yes
+     with_items:
+       - java-1.8.0-openjdk.x86_64
+       - firewalld
+       - wget
+    
+   - file:
+      path: /home/storm
+      state: directory
+      mode: 0777
+      recurse: yes
+      
+   - name: add group and user storm
+     command: "{{item}}"
+     with_items:
+        - groupadd storm
+        - adduser --system storm -g storm
+     ignore_errors: yes
+           	 
+   - name: Rename the pre-existing storm.yml
+     shell: mv /home/storm/apache-storm-1.0.2/conf/storm.yaml /home/storm/apache-storm-1.0.2/conf/bkp_storm.yaml 
+     ignore_errors: yes
+         	 
+   - name: Unarchive a file that needs to be downloaded
+     unarchive:
+      src: http://archive.apache.org/dist/storm/apache-storm-1.0.2/apache-storm-1.0.2.tar.gz
+      dest: /home/storm
+      remote_src: yes
+   
+   - file:
+      path: /home/storm//apache-storm-1.0.2
+      state: directory
+      mode: 0777
+                    	  
+   - copy:
+       src: ./../files/storminstall.sh
+       dest: /home/storminstall.sh
+     
+   - name: setting permission
+     file: dest=/home/storminstall.sh mode=a+x
+      
+   - name: executing the script on remote machine
+     shell: sh /home/storminstall.sh {{ ip1 }} {{ ip2 }} {{ ip3 }} {{ id1 }} {{ id2 }} {{ id3 }}
+     ignore_errors: yes
+     

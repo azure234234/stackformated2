@@ -1,0 +1,45 @@
+---
+#/etc/ansible/roles/zooinstall/tasks/main.yml
+# tasks file for zooinstall
+   - name: Printing
+     debug:
+       msg: "Zookeeper Installation"
+
+   - name: Check if Zookeeper already installed
+     stat:
+       path: /opt/zookeeper/conf/zoo.cfg
+     register: stat_result
+     ignore_errors: yes
+
+   - include_role:
+         name: kafkainstall
+     when: stat_result.stat.exists == True
+
+   - name: Install all packages
+     yum: name={{item}} state=present update_cache=yes
+     with_items:
+       - java-1.8.0-openjdk.x86_64
+       - firewalld
+       - wget
+
+#   - name: copying zip file to /opt
+#     copy: src=/home/zookeeper-3.4.10.tar.gz dest=/opt
+#     ignore_error: yes
+#   
+#   - name:
+#     file: dest=/opt/zookeeper-3.4.10.tar.gz mode=a+x
+    
+   - name: Extract zookeeper-3.4.10.tar.gz into /opt
+     unarchive:
+       src: ./../files/zookeeper-3.4.10.tar.gz
+       dest: /opt
+
+   - copy:
+       src: ./../files/zooinstall.sh
+       dest: /home/zooinstall.sh
+
+   - name: setting permission
+     file: dest=/home/zooinstall.sh mode=a+x
+
+   - name: executing the script on remote machine
+     shell: sh /home/zooinstall.sh {{ ip1 }} {{ ip2 }} {{ ip3 }} {{ id1 }} {{ id2 }} {{ id3 }}

@@ -1,0 +1,47 @@
+---
+#/etc/ansible/roles/kafkainstall/tasks/main.yml
+
+##Tasks file for kafkainstall
+   - name: Kafka Installation
+     debug:
+       msg: "Kafka Installation"
+
+   - name: Check if Kafka is already installed
+     stat:
+       path: /opt/kafka/config/server.properties
+     register: stat_result
+     ignore_errors: yes
+
+   - meta: end_play
+     when: stat_result.stat.exists == True
+
+   - name: Install all packages
+     yum: name={{item}} state=present update_cache=yes
+     with_items:
+       - java-1.8.0-openjdk.x86_64
+       - firewalld
+       - wget
+  
+   - name: Extract kafka_2.11-0.10.2.1.tgz into /opt
+     unarchive: src=./../files/kafka_2.11-0.10.2.1.tgz dest=/opt
+
+   - name: Install all packages
+     yum: name={{item}} state=present update_cache=yes
+     with_items:
+       - java-1.8.0-openjdk.x86_64
+       - firewalld
+       - wget
+
+
+   - copy:
+       src: ./../files/kafkainstall.sh
+       dest: /home/kafkainstall.sh
+
+   - name: setting permission
+     file: dest=/home/kafkainstall.sh mode=a+x
+
+   - name: executing the script on remote machine
+     shell: sh /home/kafkainstall.sh {{ ip1 }} {{ ip2 }} {{ ip3 }} {{ id1 }} {{ id2 }} {{ id3 }}
+     ignore_errors: yes
+
+   - meta: end_play

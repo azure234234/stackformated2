@@ -1,0 +1,6 @@
+---
+- hosts: kafka
+  roles:
+    - zooinstall
+    - zooconfig
+    - kafkainstall
